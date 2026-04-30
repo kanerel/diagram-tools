@@ -3,7 +3,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
-    redirect: '/sql-to-er'
+    name: 'Home',
+    component: () => import('../views/Home.vue'),
+    meta: { title: 'Diagram Tools' }
   },
   {
     path: '/sql-to-er',
