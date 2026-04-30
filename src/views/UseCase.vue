@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <header class="header">
-      <h1>Use Case <span>Diagram</span></h1>
+      <h1><span>Use Case</span> Diagram</h1>
       <p>添加参与者和用例，实时生成 UML 用例图</p>
     </header>
     <div class="main-grid">

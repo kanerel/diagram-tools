@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <header class="header">
-      <h1>Mermaid <span>Preview</span></h1>
+      <h1><span>Mermaid</span> Preview</h1>
       <p>输入 Mermaid 代码，实时预览并导出图表</p>
     </header>
     <div class="main-grid">
@@ -153,44 +153,66 @@ async function downloadPNG() {
   const svgEl = graphRef.value.querySelector('svg')
   if (!svgEl) return
 
-  // Clone SVG into a hidden container for export (avoid style leak)
-  const container = document.createElement('div')
-  container.style.position = 'fixed'
-  container.style.left = '-9999px'
-  container.style.top = '0'
-  container.style.background = '#ffffff'
-  document.body.appendChild(container)
-
+  // Clone and inject black & white styles directly into SVG string
   const clone = svgEl.cloneNode(true)
   clone.style.transform = ''
   clone.style.maxWidth = 'none'
 
-  // Inline black & white styles into the clone
-  const styleEl = document.createElementNS('http://www.w3.org/2000/svg', 'style')
-  styleEl.textContent = `
-    rect, polygon, circle, ellipse { fill: #ffffff !important; stroke: #000000 !important; }
-    path { stroke: #000000 !important; }
-    .node rect, .node polygon, .node circle { fill: #ffffff !important; stroke: #000000 !important; }
-    .cluster rect { fill: #f5f5f5 !important; stroke: #000000 !important; }
-    marker path, marker polygon { fill: #000000 !important; stroke: #000000 !important; }
-    text, .label, .edgeLabel, .nodeLabel, .classLabel { fill: #000000 !important; stroke: none !important; }
-    .edgePath .path, .flowchart-link { stroke: #000000 !important; fill: none !important; }
-    .actor { fill: #ffffff !important; stroke: #000000 !important; }
-    text.actor > tspan { fill: #000000 !important; }
-    .messageLine0, .messageLine1 { stroke: #000000 !important; }
-    .loopLine, .loopLiner { stroke: #000000 !important; fill: none !important; }
-    .sequenceNumber { fill: #ffffff !important; stroke: #000000 !important; }
-    #arrowhead path { fill: #000000 !important; stroke: #000000 !important; }
-    .entityBox { fill: #ffffff !important; stroke: #000000 !important; }
-    .relationshipLine { stroke: #000000 !important; }
-    .relationshipLabelBox { fill: #ffffff !important; stroke: #000000 !important; }
-    .attributeBoxEven, .attributeBoxOdd { fill: #ffffff !important; stroke: #000000 !important; }
-  `
-  clone.insertBefore(styleEl, clone.firstChild)
-  container.appendChild(clone)
+  // Set explicit dimensions from viewBox or getBBox
+  const vb = svgEl.viewBox.baseVal
+  const bbox = svgEl.getBBox()
+  const w = vb.width || bbox.width || 800
+  const h = vb.height || bbox.height || 600
+  clone.setAttribute('width', w)
+  clone.setAttribute('height', h)
 
+  // Inject <style> for black & white
+  const styleEl = document.createElementNS('http://www.w3.org/2000/svg', 'style')
+  styleEl.textContent = `rect,polygon,circle,ellipse{fill:#fff!important;stroke:#000!important}path{stroke:#000!important}.node rect,.node polygon,.node circle{fill:#fff!important;stroke:#000!important}.cluster rect{fill:#f5f5f5!important;stroke:#000!important}marker path,marker polygon{fill:#000!important;stroke:#000!important}text,.label,.edgeLabel,.nodeLabel,.classLabel{fill:#000!important;stroke:none!important}.edgePath .path,.flowchart-link{stroke:#000!important;fill:none!important}.actor{fill:#fff!important;stroke:#000!important}text.actor>tspan{fill:#000!important}.messageLine0,.messageLine1{stroke:#000!important}.loopLine,.loopLiner{stroke:#000!important;fill:none!important}.sequenceNumber{fill:#fff!important;stroke:#000!important}#arrowhead path{fill:#000!important;stroke:#000!important}.entityBox{fill:#fff!important;stroke:#000!important}.relationshipLine{stroke:#000!important}.relationshipLabelBox{fill:#fff!important;stroke:#000!important}.attributeBoxEven,.attributeBoxOdd{fill:#fff!important;stroke:#000!important}`
+  clone.insertBefore(styleEl, clone.firstChild)
+
+  // Serialize to string with xmlns, use data URL for faster loading
+  clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+  const svgStr = new XMLSerializer().serializeToString(clone)
+  const dataUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgStr)))
+
+  const img = new Image()
+  img.onload = () => {
+    try {
+      const scale = 3
+      const canvas = document.createElement('canvas')
+      canvas.width = w * scale
+      canvas.height = h * scale
+      const ctx = canvas.getContext('2d')
+      ctx.scale(scale, scale)
+      ctx.fillStyle = '#ffffff'
+      ctx.fillRect(0, 0, w, h)
+      ctx.drawImage(img, 0, 0, w, h)
+      canvas.toBlob(pngBlob => {
+        const a = document.createElement('a')
+        a.href = URL.createObjectURL(pngBlob)
+        a.download = 'mermaid-diagram.png'
+        a.click()
+        URL.revokeObjectURL(a.href)
+        toastRef.value?.show('已下载 PNG', 'success')
+      }, 'image/png')
+    } catch (e) {
+      // Canvas tainted by foreignObject, fallback to html-to-image
+      downloadPngFallback(svgEl)
+    }
+  }
+  img.onerror = () => {
+    toastRef.value?.show('PNG 导出失败', 'error')
+  }
+  img.src = dataUrl
+}
+
+// Fallback: use html-to-image when SVG contains foreignObject (e.g. class diagrams)
+async function downloadPngFallback(svgEl) {
+  const origTransform = svgEl.style.transform || ''
+  svgEl.style.transform = ''
   try {
-    const dataUrl = await toPng(container, {
+    const dataUrl = await toPng(graphRef.value, {
       backgroundColor: '#ffffff',
       pixelRatio: 3,
       cacheBust: true
@@ -201,9 +223,9 @@ async function downloadPNG() {
     a.click()
     toastRef.value?.show('已下载 PNG', 'success')
   } catch (e) {
-    toastRef.value?.show('PNG 导出失败: ' + e.message, 'error')
+    toastRef.value?.show('PNG 导出失败', 'error')
   } finally {
-    document.body.removeChild(container)
+    svgEl.style.transform = origTransform
   }
 }
 </script>

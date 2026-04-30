@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <header class="header">
-      <h1>SQL <span>to</span> ER Diagram</h1>
+      <h1><span>SQL</span> to <span>ER</span> Diagram</h1>
       <p>输入一条或多条 CREATE TABLE 语句，自动生成实体关系图</p>
     </header>
     <div class="main-grid">
