@@ -32,6 +32,12 @@ const routes = [
     meta: { title: 'System Module' }
   },
   {
+    path: '/flowchart',
+    name: 'FlowChart',
+    component: () => import('../views/FlowChart.vue'),
+    meta: { title: 'Flow Chart' }
+  },
+  {
     path: '/sql-to-table',
     name: 'SqlToTable',
     component: () => import('../views/SqlToTable.vue'),

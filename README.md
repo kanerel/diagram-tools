@@ -17,12 +17,14 @@
 | **Use Case** | UML 用例图编辑 | SVG / PNG / Draw.io | 参与者、系统边界、关系连线 |
 | **System Module** | 系统功能模块图 | SVG / PNG | 多级嵌套、树形布局、子节点联动拖拽 |
 | **Mermaid** | 全类型 Mermaid 图表 | SVG / PNG | 黑白主题、拖拽缩放 |
+| **FlowChart** | 可视化流程图编辑 | SVG / PNG | 五种节点、连线标签、折线连接、拖拽布局、撤销重做 |
 
 ### 技术亮点
 
 | 特性 | 说明 |
 |------|------|
 | 🖱️ 自由拖拽 | 所有图表节点支持拖拽调整位置 |
+| ↩️ 撤销/重做 | UseCase、SystemModule、FlowChart 编辑器支持 Ctrl+Z / Ctrl+Shift+Z |
 | 📐 自动布局 | System Module 自动树形布局，折线连接 |
 | 🎯 黑白渲染 | Mermaid 图表黑白主题，适合论文直接使用 |
 | 📊 三线表导出 | SQL to Table 生成标准学术三线表，Word 导出含行高行距设置 |

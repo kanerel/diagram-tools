@@ -9,10 +9,18 @@
       <div class="card editor-card">
         <div class="editor-toolbar">
           <div class="card-title" style="margin-bottom:0">用例编辑器</div>
-          <button class="btn-add" @click="addActor">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            添加参与者
-          </button>
+          <div class="toolbar-actions">
+            <button class="btn-undo" @click="undo" :disabled="!canUndo" title="撤销 (Ctrl+Z)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            </button>
+            <button class="btn-undo" @click="redo" :disabled="!canRedo" title="重做 (Ctrl+Shift+Z)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            </button>
+            <button class="btn-add" @click="addActor">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              添加参与者
+            </button>
+          </div>
         </div>
         <div class="tree" v-if="actors.length > 0">
           <div v-for="(actor, ai) in actors" :key="actor.id" class="tree-actor">
@@ -189,6 +197,16 @@
 <script setup>
 import { ref, nextTick, onMounted, onUnmounted } from 'vue'
 import Toast from '../components/Toast.vue'
+import { useHistory } from '../composables/useHistory.js'
+
+const { undo, redo, canUndo, canRedo, pushHistory } = useHistory(
+  () => JSON.parse(JSON.stringify({ actors: actors.value, relations: relations.value })),
+  (snapshot) => {
+    actors.value = snapshot.actors
+    relations.value = snapshot.relations
+    onDataChange()
+  }
+)
 
 let _uid = 0
 function uid() { return ++_uid }
@@ -233,30 +251,37 @@ let _dragging = null
 
 function addActor() {
   actors.value.push({ id: uid(), name: '', hasBoundary: false, boundaryName: '', cases: [] })
+  pushHistory()
   onDataChange()
 }
 
 function removeActor(ai) {
   actors.value.splice(ai, 1)
+  pushHistory()
   onDataChange()
 }
 
 function addUseCase(ai) {
   actors.value[ai].cases.push({ id: uid(), name: '', relation: 'association' })
+  pushHistory()
   onDataChange()
 }
 
 function removeUseCase(ai, ci) {
   actors.value[ai].cases.splice(ci, 1)
+  pushHistory()
   onDataChange()
 }
 
 function addRelation() {
   relations.value.push({ id: uid(), fromActor: '', fromCase: '', type: 'include', toActor: '', toCase: '' })
+  pushHistory()
 }
 
 function removeRelation(ri) {
   relations.value.splice(ri, 1)
+  pushHistory()
+  onDataChange()
 }
 
 function getCases(actorId) {
@@ -992,6 +1017,10 @@ ${cells.join('\n')}
 /* Editor */
 .editor-card { display: flex; flex-direction: column; min-height: 380px; }
 .editor-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.toolbar-actions { display: flex; gap: 6px; align-items: center; }
+.btn-undo { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-input); color: var(--text-secondary); cursor: pointer; transition: all 0.15s; }
+.btn-undo:hover:not(:disabled) { border-color: var(--text-muted); color: var(--text-primary); }
+.btn-undo:disabled { opacity: 0.3; cursor: not-allowed; }
 .btn-add { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border: 1px solid var(--accent); border-radius: var(--radius); background: var(--accent-dim); color: var(--accent); font-family: 'Noto Sans SC', sans-serif; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.15s; }
 .btn-add:hover { background: var(--accent); color: #0f1117; }
 .tree { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }

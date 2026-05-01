@@ -9,6 +9,14 @@
       <div class="card editor-card">
         <div class="editor-toolbar">
           <div class="card-title" style="margin-bottom:0">模块编辑器</div>
+          <div class="toolbar-actions">
+            <button class="btn-undo" @click="undo" :disabled="!canUndo" title="撤销 (Ctrl+Z)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            </button>
+            <button class="btn-undo" @click="redo" :disabled="!canRedo" title="重做 (Ctrl+Shift+Z)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            </button>
+          </div>
         </div>
         <!-- 系统名称 -->
         <div class="system-name-row">
@@ -133,6 +141,16 @@
 import { ref, nextTick, onMounted, onUnmounted } from 'vue'
 import Toast from '../components/Toast.vue'
 import { toPng } from 'html-to-image'
+import { useHistory } from '../composables/useHistory.js'
+
+const { undo, redo, canUndo, canRedo, pushHistory } = useHistory(
+  () => JSON.parse(JSON.stringify({ systemName: systemName.value, modules: modules.value })),
+  (snapshot) => {
+    systemName.value = snapshot.systemName
+    modules.value = snapshot.modules
+    onDataChange()
+  }
+)
 
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2) }
 
@@ -186,22 +204,26 @@ let _connections = []
 
 function addModule() {
   modules.value.push({ id: uid(), name: '', children: [] })
+  pushHistory()
   onDataChange()
 }
 
 function removeModule(mi) {
   modules.value.splice(mi, 1)
+  pushHistory()
   onDataChange()
 }
 
 function addChild(parent, type) {
   if (!parent.children) parent.children = []
   parent.children.push({ id: uid(), name: '', type, children: type === 'module' ? [] : undefined })
+  pushHistory()
   onDataChange()
 }
 
 function removeChild(parent, ci) {
   parent.children.splice(ci, 1)
+  pushHistory()
   onDataChange()
 }
 
@@ -696,6 +718,10 @@ onUnmounted(() => {
 /* Editor */
 .editor-card { display: flex; flex-direction: column; min-height: 380px; }
 .editor-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.toolbar-actions { display: flex; gap: 6px; align-items: center; }
+.btn-undo { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-input); color: var(--text-secondary); cursor: pointer; transition: all 0.15s; }
+.btn-undo:hover:not(:disabled) { border-color: var(--text-muted); color: var(--text-primary); }
+.btn-undo:disabled { opacity: 0.3; cursor: not-allowed; }
 .system-name-row { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; }
 .btn-add { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border: 1px solid var(--accent); border-radius: var(--radius); background: var(--accent-dim); color: var(--accent); font-family: 'Noto Sans SC', sans-serif; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.15s; }
 .btn-add:hover { background: var(--accent); color: #0f1117; }

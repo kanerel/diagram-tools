@@ -7,7 +7,7 @@
         <h1 class="hero-title">
           <span class="title-accent">Diagram</span> Tools
         </h1>
-        <p class="hero-desc">一站式图表绘制工具集，支持 SQL 转 ER 图、SQL 生成三线表、UML 用例图、系统功能模块图、Mermaid 图表的编辑、预览与导出。</p>
+        <p class="hero-desc">一站式图表绘制工具集，支持 SQL 转 ER 图、SQL 生成三线表、UML 用例图、系统功能模块图、流程图、Mermaid 图表的编辑、预览与导出。</p>
         <div class="hero-actions">
           <router-link to="/sql-to-er" class="btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -24,7 +24,7 @@
     <div class="features">
       <div class="features-header">
         <h2 class="section-title">功能模块</h2>
-        <p class="section-desc">五大核心工具，覆盖软件工程常用图表需求</p>
+        <p class="section-desc">六大核心工具，覆盖软件工程常用图表需求</p>
       </div>
       <div class="features-grid">
         <router-link to="/sql-to-er" class="feature-card">
@@ -77,6 +77,17 @@
           </div>
           <h3>Mermaid</h3>
           <p>支持 Mermaid 全部图表类型，黑白主题渲染，适合论文及文档使用。支持拖拽平移与缩放。</p>
+          <div class="card-arrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </div>
+        </router-link>
+
+        <router-link to="/flowchart" class="feature-card">
+          <div class="card-icon" style="--card-color: #34d399">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><polyline points="9 11 12 8 15 11"/></svg>
+          </div>
+          <h3>FlowChart</h3>
+          <p>可视化流程图编辑器，支持开始/结束、处理、判断、输入输出五种节点，连线标签，折线连接，拖拽布局与撤销重做。</p>
           <div class="card-arrow">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </div>
