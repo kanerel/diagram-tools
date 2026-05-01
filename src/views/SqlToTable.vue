@@ -6,7 +6,7 @@
     </header>
     <div class="main-grid" :class="{ stretched: tables.length === 0 }">
       <div class="left-panel">
-        <SqlInput :error-msg="errorMsg" @generate="generate" @clear="clearAll" />
+        <SqlInput :error-msg="errorMsg" button-text="生成三线表" @generate="generate" @clear="clearAll" />
         <InfoPanel :visible="!!activeTable" :table-name="info.tableName" :field-count="info.fieldCount" :fields="info.fields" />
       </div>
       <div class="card preview-card" :class="{ 'has-content': tables.length > 0 }">

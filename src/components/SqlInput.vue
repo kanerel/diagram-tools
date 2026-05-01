@@ -4,8 +4,7 @@
     <textarea class="sql-input" v-model="sql" placeholder="CREATE TABLE `users` (&#10;  `id` INT PRIMARY KEY,&#10;  `name` VARCHAR(255),&#10;  `email` VARCHAR(255)&#10;);&#10;&#10;CREATE TABLE `orders` (&#10;  `id` INT PRIMARY KEY,&#10;  `user_id` INT,&#10;  `amount` DECIMAL(10,2)&#10;);"></textarea>
     <div class="btn-row">
       <button class="btn btn-primary" @click="$emit('generate', sql)">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        生成 ER 图
+        {{ buttonText }}
       </button>
       <button class="btn btn-secondary" @click="sql = ''; $emit('clear')">清空</button>
     </div>
@@ -15,7 +14,7 @@
 <script setup>
 import { ref } from 'vue'
 const sql = ref('')
-defineProps({ errorMsg: { type: String, default: '' } })
+defineProps({ errorMsg: { type: String, default: '' }, buttonText: { type: String, default: '生成 ER 图' } })
 defineEmits(['generate', 'clear'])
 </script>
 <style scoped>
