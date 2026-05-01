@@ -4,7 +4,7 @@
       <h1><span>SQL</span> to <span>ER</span> Diagram</h1>
       <p>输入一条或多条 CREATE TABLE 语句，自动生成实体关系图</p>
     </header>
-    <div class="main-grid">
+    <div class="main-grid" :class="{ stretched: diagrams.length === 0 }">
       <div class="left-panel">
         <SqlInput :error-msg="errorMsg" @generate="generateER" @clear="clearAll" />
         <InfoPanel :visible="!!activeDiagram" :table-name="info.tableName" :field-count="info.fieldCount" :fields="info.fields" />
@@ -89,12 +89,8 @@ function clearAll() {
   color: var(--text-secondary);
   font-weight: 300;
 }
-.main-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 28px;
-  align-items: stretch;
-}
+.main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+.main-grid.stretched { align-items: stretch; }
 @media (max-width: 960px) {
   .main-grid { grid-template-columns: 1fr; }
   .page { padding: 20px; }

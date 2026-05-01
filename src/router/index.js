@@ -30,6 +30,12 @@ const routes = [
     name: 'SystemModule',
     component: () => import('../views/SystemModule.vue'),
     meta: { title: 'System Module' }
+  },
+  {
+    path: '/sql-to-table',
+    name: 'SqlToTable',
+    component: () => import('../views/SqlToTable.vue'),
+    meta: { title: 'SQL to Table' }
   }
 ]
 

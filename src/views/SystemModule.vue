@@ -4,7 +4,7 @@
       <h1><span>System</span> Module</h1>
       <p>添加模块和功能，实时生成系统功能模块图</p>
     </header>
-    <div class="main-grid">
+    <div class="main-grid" :class="{ stretched: !hasContent }">
       <!-- 左侧：编辑面板 -->
       <div class="card editor-card">
         <div class="editor-toolbar">
@@ -685,7 +685,8 @@ onUnmounted(() => {
 .header h1 { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.5px; color: var(--text-primary); margin-bottom: 8px; }
 .header h1 span { color: var(--accent); }
 .header p { font-size: 0.95rem; color: var(--text-secondary); font-weight: 300; }
-.main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: stretch; }
+.main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+.main-grid.stretched { align-items: stretch; }
 @media (max-width: 960px) { .main-grid { grid-template-columns: 1fr; } .page { padding: 20px; } }
 
 .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow); }

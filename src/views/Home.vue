@@ -3,11 +3,11 @@
     <div class="hero">
       <div class="hero-glow"></div>
       <div class="hero-content">
-        <div class="hero-badge">开源 · 免费 · 在线</div>
+        <div class="hero-badge">开源 · 免费 · 在线 · 亮暗主题</div>
         <h1 class="hero-title">
           <span class="title-accent">Diagram</span> Tools
         </h1>
-        <p class="hero-desc">一站式图表绘制工具集，支持 SQL 转 ER 图、Mermaid 图表、UML 用例图、系统功能模块图的编辑、预览与导出。</p>
+        <p class="hero-desc">一站式图表绘制工具集，支持 SQL 转 ER 图、SQL 生成三线表、UML 用例图、系统功能模块图、Mermaid 图表的编辑、预览与导出。</p>
         <div class="hero-actions">
           <router-link to="/sql-to-er" class="btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -24,7 +24,7 @@
     <div class="features">
       <div class="features-header">
         <h2 class="section-title">功能模块</h2>
-        <p class="section-desc">四大核心工具，覆盖软件工程常用图表需求</p>
+        <p class="section-desc">五大核心工具，覆盖软件工程常用图表需求</p>
       </div>
       <div class="features-grid">
         <router-link to="/sql-to-er" class="feature-card">
@@ -38,12 +38,12 @@
           </div>
         </router-link>
 
-        <router-link to="/mermaid" class="feature-card">
-          <div class="card-icon" style="--card-color: #e8a849">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <router-link to="/sql-to-table" class="feature-card">
+          <div class="card-icon" style="--card-color: #f472b6">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
           </div>
-          <h3>Mermaid</h3>
-          <p>支持 Mermaid 全部图表类型，黑白主题渲染，适合论文及文档使用。支持拖拽平移与缩放。</p>
+          <h3>SQL to Table</h3>
+          <p>输入 SQL DDL 语句，自动生成学术三线表。导出 PNG / Word / Excel，适合论文直接使用。</p>
           <div class="card-arrow">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </div>
@@ -70,6 +70,17 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </div>
         </router-link>
+
+        <router-link to="/mermaid" class="feature-card">
+          <div class="card-icon" style="--card-color: #e8a849">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <h3>Mermaid</h3>
+          <p>支持 Mermaid 全部图表类型，黑白主题渲染，适合论文及文档使用。支持拖拽平移与缩放。</p>
+          <div class="card-arrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </div>
+        </router-link>
       </div>
     </div>
 
@@ -80,6 +91,8 @@
         <span class="tech-tag">Vite</span>
         <span class="tech-tag">Vue Router</span>
         <span class="tech-tag">Mermaid.js</span>
+        <span class="tech-tag">docx.js</span>
+        <span class="tech-tag">SheetJS</span>
         <span class="tech-tag">SVG</span>
         <span class="tech-tag">Canvas</span>
       </div>
@@ -206,7 +219,7 @@
 }
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
 .feature-card {
@@ -295,5 +308,8 @@
 @media (max-width: 640px) {
   .hero-title { font-size: 2.2rem; }
   .features-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 960px) and (min-width: 641px) {
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>

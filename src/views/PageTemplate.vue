@@ -2,7 +2,7 @@
   PageTemplate.vue
   通用页面模板 - 左输入右预览的两列布局
   复用方式：复制此文件到 src/views/，修改标题、输入区、预览区内容即可
-  
+
   使用说明：
   1. 复制文件并重命名（如 MyFeature.vue）
   2. 修改 header 中的标题和描述
@@ -10,6 +10,11 @@
   4. 在右侧 slot="preview" 中放置预览组件
   5. 在 router/index.js 中添加路由
   6. 在 NavBar.vue 的 navRoutes 中添加导航链接
+
+  注意：
+  - hasContent 为 false 时两列等高（stretch），有内容时各自按内容决定高度（start）
+  - 导出按钮行在有内容时自动显示
+  - 支持标签栏（通过 tabs prop）
 -->
 <template>
   <div class="page">
@@ -17,34 +22,47 @@
       <h1>{{ title }} <span>{{ titleAccent }}</span></h1>
       <p>{{ description }}</p>
     </header>
-    <div class="main-grid">
+    <div class="main-grid" :class="{ stretched: !hasContent }">
       <!-- 左侧：输入区 -->
-      <div class="card">
-        <slot name="input">
-          <!-- 默认内容：文本输入 + 操作按钮 -->
-          <div class="card-title">输入</div>
-          <textarea
-            class="code-input"
-            v-model="inputValue"
-            :placeholder="placeholder"
-            spellcheck="false"
-          ></textarea>
-          <div class="btn-row">
-            <button class="btn-primary" @click="$emit('generate', inputValue)">
-              {{ generateText }}
-            </button>
-            <button class="btn-ghost" @click="handleClear">
-              清空
-            </button>
-          </div>
-          <div v-if="errorMsg" class="error-msg">{{ errorMsg }}</div>
-        </slot>
+      <div class="left-panel">
+        <div class="card">
+          <slot name="input">
+            <!-- 默认内容：文本输入 + 操作按钮 -->
+            <div class="card-title">输入</div>
+            <textarea
+              class="code-input"
+              v-model="inputValue"
+              :placeholder="placeholder"
+              spellcheck="false"
+            ></textarea>
+            <div class="btn-row">
+              <button class="btn-primary" @click="$emit('generate', inputValue)">
+                {{ generateText }}
+              </button>
+              <button class="btn-ghost" @click="handleClear">
+                清空
+              </button>
+            </div>
+            <div v-if="errorMsg" class="error-msg">{{ errorMsg }}</div>
+          </slot>
+        </div>
+        <!-- 左侧底部信息面板（可选） -->
+        <slot name="info"></slot>
       </div>
 
       <!-- 右侧：预览区 -->
       <div class="card preview-card" :class="{ 'has-content': hasContent }">
         <div class="preview-header">
-          <div class="card-title" style="margin-bottom:0">预览</div>
+          <div class="card-title" style="margin-bottom:0">{{ previewTitle }}</div>
+        </div>
+        <!-- 标签栏（可选） -->
+        <div class="tab-bar" :class="{ visible: tabs.length > 1 }" v-if="tabs.length > 0">
+          <div
+            v-for="(tab, i) in tabs"
+            :key="i"
+            :class="['tab-item', { active: i === activeTabIndex }]"
+            @click="$emit('update:activeTabIndex', i)"
+          >{{ tab }}</div>
         </div>
         <slot name="preview">
           <!-- 默认内容：占位提示 -->
@@ -67,6 +85,14 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
               下载 PNG
             </button>
+            <!-- 批量下载（多标签时显示） -->
+            <div class="batch-wrapper" :class="{ visible: tabs.length > 1 }">
+              <button class="btn-export-all" @click="$emit('export-all')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                批量下载全部
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="margin-left:2px"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+            </div>
           </div>
         </slot>
       </div>
@@ -87,10 +113,13 @@ const props = defineProps({
   placeholder: { type: String, default: '在此输入内容...' },
   generateText: { type: String, default: '生成' },
   emptyText: { type: String, default: '在左侧输入内容后点击生成' },
-  hasContent: { type: Boolean, default: false }
+  previewTitle: { type: String, default: '预览' },
+  hasContent: { type: Boolean, default: false },
+  tabs: { type: Array, default: () => [] },
+  activeTabIndex: { type: Number, default: 0 }
 })
 
-defineEmits(['generate', 'clear', 'export-svg', 'export-png'])
+defineEmits(['generate', 'clear', 'export-svg', 'export-png', 'export-all', 'update:activeTabIndex'])
 
 // ============ 内部状态 ============
 const inputValue = ref('')
@@ -142,7 +171,15 @@ defineExpose({
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 28px;
+  align-items: start;
+}
+.main-grid.stretched {
   align-items: stretch;
+}
+.left-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 @media (max-width: 960px) {
   .main-grid { grid-template-columns: 1fr; }
@@ -264,6 +301,39 @@ defineExpose({
   justify-content: space-between;
   margin-bottom: 18px;
 }
+
+/* 标签栏 */
+.tab-bar {
+  display: none;
+  gap: 4px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.tab-bar.visible {
+  display: flex;
+}
+.tab-item {
+  padding: 7px 16px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.tab-item:hover {
+  color: var(--text-primary);
+  border-color: var(--text-muted);
+}
+.tab-item.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
 .preview-placeholder {
   flex: 1;
   display: flex;
@@ -327,5 +397,33 @@ defineExpose({
   border-color: var(--accent);
   color: var(--accent);
   background: var(--accent-dim);
+}
+.btn-export-all {
+  flex: 1;
+  padding: 11px 16px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.btn-export-all:hover {
+  background: var(--accent);
+  color: #0f1117;
+}
+.batch-wrapper {
+  display: none;
+  flex: 1;
+}
+.batch-wrapper.visible {
+  display: flex;
 }
 </style>

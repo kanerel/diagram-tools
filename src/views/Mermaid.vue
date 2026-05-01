@@ -4,7 +4,7 @@
       <h1><span>Mermaid</span> Preview</h1>
       <p>输入 Mermaid 代码，实时预览并导出图表</p>
     </header>
-    <div class="main-grid">
+    <div class="main-grid" :class="{ stretched: !svgOutput }">
       <div class="card">
         <div class="card-title">Mermaid 输入</div>
         <textarea class="code-input" v-model="code" placeholder="graph TD
@@ -254,12 +254,8 @@ async function downloadPngFallback(svgEl) {
   color: var(--text-secondary);
   font-weight: 300;
 }
-.main-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 28px;
-  align-items: stretch;
-}
+.main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+.main-grid.stretched { align-items: stretch; }
 @media (max-width: 960px) {
   .main-grid { grid-template-columns: 1fr; }
   .page { padding: 20px; }

@@ -86,8 +86,19 @@ function processColumn(col) {
     var nameMatch = col.match(/^`([^`]+)`|"([^"]+)"|(\w+)/);
     if (!nameMatch) return null;
     var name = nameMatch[1] || nameMatch[2] || nameMatch[3];
+    // Extract column type
+    var afterName = col.substring(nameMatch[0].length).trim();
+    var typeMatch = afterName.match(/^(\w+(?:\s*\(\s*\d+(?:\s*,\s*\d+)?\s*\))?(?:\s+(?:UNSIGNED|ZEROFILL|CHARACTER SET[^,\s]*|COLLATE[^,\s]*))*)/i);
+    var type = typeMatch ? typeMatch[1].trim().toUpperCase() : '';
+    // Extract nullable
+    var nullable = 'YES';
+    if (/\bNOT\s+NULL\b/i.test(col)) nullable = 'NO';
+    // Extract default value
+    var defaultVal = '—';
+    var defaultMatch = col.match(/DEFAULT\s+(?:'([^']*)'|(\S+))/i);
+    if (defaultMatch) defaultVal = defaultMatch[1] !== undefined ? defaultMatch[1] : defaultMatch[2];
     // Extract column comment
     var commentMatch = col.match(/COMMENT\s+'([^']*)'/i);
     var display = commentMatch ? commentMatch[1] : name;
-    return { name: name, display: display };
+    return { name: name, display: display, type: type, nullable: nullable, defaultVal: defaultVal };
 }
