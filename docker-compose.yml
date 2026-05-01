@@ -2,5 +2,5 @@ services:
   diagram-tools:
     build: .
     ports:
-      - "8080:80"
+      - "18888:80"
     restart: unless-stopped

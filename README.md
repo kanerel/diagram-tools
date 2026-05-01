@@ -73,14 +73,14 @@ cd diagram-tools
 # 2. 一键启动
 docker compose up -d
 
-# 3. 访问 http://localhost:8080
+# 3. 访问 http://localhost:18888
 ```
 
 手动构建：
 
 ```bash
 docker build -t diagram-tools .
-docker run -d -p 8080:80 diagram-tools
+docker run -d -p 18888:80 diagram-tools
 ```
 
 ## 📄 导出格式
