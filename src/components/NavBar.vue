@@ -5,9 +5,9 @@
       <span class="brand-text">Diagram Tools</span>
     </router-link>
     <div class="navbar-links">
-      <router-link v-for="route in navRoutes" :key="route.path" :to="route.path" class="nav-link" active-class="active">
+      <router-link v-for="route in navRoutes" :key="route.path" :to="route.path" class="nav-link" active-class="active" :title="route.label">
         <component :is="'span'" v-html="route.icon"></component>
-        {{ route.label }}
+        <span class="nav-label">{{ route.label }}</span>
       </router-link>
     </div>
     <div class="navbar-actions">
@@ -106,6 +106,8 @@ const navRoutes = [
   color: var(--text-secondary);
   text-decoration: none;
   transition: all 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .nav-link:hover {
   color: var(--text-primary);
@@ -147,5 +149,34 @@ const navRoutes = [
 }
 .navbar-github:hover {
   color: var(--text-primary);
+}
+
+/* Tablet: hide nav labels, hide right actions */
+@media (max-width: 1100px) {
+  .nav-label {
+    display: none;
+  }
+  .navbar-actions {
+    display: none;
+  }
+}
+
+/* Mobile: hide nav labels, hide brand text, compact spacing */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 12px;
+  }
+  .brand-text {
+    display: none;
+  }
+  .navbar-links {
+    gap: 2px;
+  }
+  .nav-link {
+    padding: 8px 10px;
+  }
+  .nav-label {
+    display: none;
+  }
 }
 </style>

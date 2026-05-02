@@ -3,7 +3,7 @@
     <div class="hero">
       <div class="hero-glow"></div>
       <div class="hero-content">
-        <div class="hero-badge">开源 · 免费 · 在线 · 亮暗主题</div>
+        <div class="hero-badge">开源 · 免费 · 在线</div>
         <h1 class="hero-title">
           <span class="title-accent">Diagram</span> Tools
         </h1>
