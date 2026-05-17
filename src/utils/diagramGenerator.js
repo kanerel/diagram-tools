@@ -18,17 +18,26 @@ function escapeXml(str) {
  * 生成 drawio XML
  * @param {string} tableDisplay - 表显示名（用于中心节点）
  * @param {Array<{name: string, display: string}>} columns - 字段列表
+ * @param {Object} [opts] - 可选样式参数
+ * @param {number} [opts.rectW=180] - 矩形宽度
+ * @param {number} [opts.rectH=50] - 矩形高度
+ * @param {number} [opts.ellipseW=140] - 椭圆宽度
+ * @param {number} [opts.ellipseH=60] - 椭圆高度
+ * @param {number} [opts.radiusFactor=1] - 连接线长度倍率
+ * @param {number} [opts.fontSize=20] - 字体大小
  * @returns {string} drawio XML 字符串
  */
-export function generateDiagramXml(tableDisplay, columns) {
+export function generateDiagramXml(tableDisplay, columns, opts = {}) {
     const N = columns.length;
-    const rectW = 180;
-    const rectH = 50;
-    const ellipseW = 140;
-    const ellipseH = 60;
+    const rectW = opts.rectW || 180;
+    const rectH = opts.rectH || 50;
+    const ellipseW = opts.ellipseW || 140;
+    const ellipseH = opts.ellipseH || 60;
+    const fontSize = opts.fontSize || 20;
+    const radiusFactor = opts.radiusFactor || 1;
 
     // 计算半径：从模板数据拟合
-    const radius = 180 + N * 24;
+    const radius = (180 + N * 24) * radiusFactor;
 
     // 中心矩形的中心点（椭圆围绕此点均匀分布）
     const cx = rectW / 2;  // 90
@@ -100,7 +109,7 @@ export function generateDiagramXml(tableDisplay, columns) {
     for (let i = 0; i < N; i++) {
         const edgeId = String(N + 4 + i);
         const targetId = String(3 + i);
-        xml += `<mxCell id="${edgeId}" parent="1" edge="1" source="${rectId}" target="${targetId}" style="endArrow=none;html=1;strokeColor=#000000;strokeWidth=1;fontSize=20;fontFamily=SimSun, &quot;Songti SC&quot;, serif;fontColor=#000000;editable=1;labelBackgroundColor=none;labelPosition=right;align=left;spacingLeft=5;verticalAlign=middle;"><mxGeometry relative="1" as="geometry"><mxPoint as="offset" x="1" y="-1"/></mxGeometry></mxCell>`;
+        xml += `<mxCell id="${edgeId}" parent="1" edge="1" source="${rectId}" target="${targetId}" style="endArrow=none;html=1;strokeColor=#000000;strokeWidth=1;fontSize=${fontSize};fontFamily=SimSun, &quot;Songti SC&quot;, serif;fontColor=#000000;editable=1;labelBackgroundColor=none;labelPosition=right;align=left;spacingLeft=5;verticalAlign=middle;"><mxGeometry relative="1" as="geometry"><mxPoint as="offset" x="1" y="-1"/></mxGeometry></mxCell>`;
     }
 
     // Group 容器
@@ -110,11 +119,11 @@ export function generateDiagramXml(tableDisplay, columns) {
     for (let i = 0; i < N; i++) {
         const f = fieldsRel[i];
         const cellId = String(3 + i);
-        xml += `<mxCell id="${cellId}" parent="${groupId}" vertex="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;fontColor=#000000;fontSize=20;fontFamily=SimSun, &quot;Songti SC&quot;, serif;" value="${escapeXml(f.display)}"><mxGeometry x="${f.x}" y="${f.y}" width="${ellipseW}" height="${ellipseH}" as="geometry"/></mxCell>`;
+        xml += `<mxCell id="${cellId}" parent="${groupId}" vertex="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;fontColor=#000000;fontSize=${fontSize};fontFamily=SimSun, &quot;Songti SC&quot;, serif;" value="${escapeXml(f.display)}"><mxGeometry x="${f.x}" y="${f.y}" width="${ellipseW}" height="${ellipseH}" as="geometry"/></mxCell>`;
     }
 
     // 中心矩形（表名）
-    xml += `<mxCell id="${rectId}" parent="${groupId}" vertex="1" style="rounded=1;arcSize=0;whiteSpace=wrap;html=1;fillColor=#ffffff;fontColor=#000000;fontSize=20;fontFamily=SimSun, &quot;Songti SC&quot;, serif;" value="${escapeXml(tableDisplay)}"><mxGeometry x="${rectRelX}" y="${rectRelY}" width="${rectW}" height="${rectH}" as="geometry"/></mxCell>`;
+    xml += `<mxCell id="${rectId}" parent="${groupId}" vertex="1" style="rounded=1;arcSize=0;whiteSpace=wrap;html=1;fillColor=#ffffff;fontColor=#000000;fontSize=${fontSize};fontFamily=SimSun, &quot;Songti SC&quot;, serif;" value="${escapeXml(tableDisplay)}"><mxGeometry x="${rectRelX}" y="${rectRelY}" width="${rectW}" height="${rectH}" as="geometry"/></mxCell>`;
 
     xml += '</root></mxGraphModel></diagram></mxfile>';
     return xml;
